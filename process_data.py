@@ -6,17 +6,17 @@ import numpy as np
 from shutil import copyfile,move
 import time
 import sys
-from PIL import Image
-import cv2
+# from PIL import Image
+# import cv2
 from errno import EEXIST
 
-import keras
-import keras.backend as K
-from keras.preprocessing import image, sequence
-from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import to_categorical
-from keras.utils.data_utils import get_file
-#from keras.utils.np_utils import get_file
+# import keras
+# import keras.backend as K
+# from keras.preprocessing import image, sequence
+# from keras.preprocessing.image import ImageDataGenerator
+# from keras.utils import to_categorical
+# from keras.utils.data_utils import get_file
+# from keras.utils.np_utils import get_file
     
 def working_directory(in_path):
         '''
@@ -63,59 +63,59 @@ def rename_files(in_path, newname):
                 os.rename(filename, new_file)
                 
                 
-def random_split(in_path, out_path, n_smaples=20):
-        '''
-        Splits the data into train, test, validation set. 
-        For each set this function needs to be executed separately.
-        '''
+def move_files(in_path, out_path, n_samples=20):
+    '''
+    Splits the data into train, test, validation set. 
+    For each set this function needs to be executed separately.
+    '''
     # List all files in the directory
-        file_list = os.listdir(in_path)
-        #current_dir = os.getcwd()     
-        working_directory(in_path)
-        shuf = np.random.permutation(file_list)
-        print("Moving to %r directory. Please wait for a few minutes while moving... " % out_path)
-        start = time.time()
-        for i in range(split_size_numbers):
-              move(shuf[i], out_path + shuf[i])
-        end = time.time()
-        print("This move operation took %r seconds to run." %(end - start))
-        print("All {} files have been moved successfully. Check the folder now.".format(split_size_numbers))
+    file_list = os.listdir(in_path)
+    #current_dir = os.getcwd()     
+    working_directory(in_path)
+    shuf = np.random.permutation(file_list)
+    print("Moving to %r.Please wait..  " % out_path)
+    start = time.time()
+    for i in range(n_samples):
+            move(shuf[i], out_path + shuf[i])
+    end = time.time()
+    print("Op took %r secs." %(end - start))
+    print("All {} files moved.".format(n_samples))
         
 
-def Copyfile(in_path, out_path, quantity = None, shuffle = False):
-
+def copy_files(in_path, out_path, n_samples = None, shuffle = False):
+    out_path = out_path+"/"
     counter = 0
     filelist = os.listdir(in_path)
-    working_directory(in_path)
+    # working_directory(in_path)
 
     if shuffle:
         shuf = np.random.permutation(filelist)
-        print("Copying to %r directory. Please wait... " % out_path)
+        print("Copying to %r. Please wait... " % out_path)
 
         start = time.time()
-
-        for i in range(quantity):
+        print("Shuffle:True")
+        for i in range(n_samples):
             copyfile(shuf[i], out_path+shuf[i])
             counter+=1
-            sys.stdout.write("\rTotal images copied with shuffle : %r" % counter)
+            sys.stdout.write("\rimages copied: %r" % counter)
             sys.stdout.flush()   
 
         end = time.time()
-        print("This move operation took %r seconds to run." %(end - start))
-        print("All {} files have been moved successfully.".format(quantity))
+        print("\nOp took %r secs." %(end - start))
+        print("All {} files moved.".format(n_samples))
     else:
         start = time.time()
-
-        for i in range(quantity):
+        print("Shuffle: False")
+        for i in range(n_samples):
             copyfile(filelist[i], out_path+filelist[i])
             counter+=1
-            sys.stdout.write("\rTotal images copied without shuffle : %r" % counter)
+            sys.stdout.write("\rTotal images: %r" % counter)
             sys.stdout.flush()   
 
         end = time.time()
 
-        print("This move operation took %r seconds to run." %(end - start))
-        print("All {} files have been moved successfully.".format(quantity))
+        print("Op took %r secs." %(end - start))
+        print("All {} files moved.".format(n_samples))
 
 
 def onehot_encoding(x, num_classes = None, dir = False):
@@ -195,7 +195,7 @@ def create_directory(directory):
     try:
         if not os.path.exists(directory):
             os.makedirs(directory)
-    
+
     except OSError as e:
         if e.errno != EEXIST:
             raise("Race condition. Directory occurs between 'os.path.exists() and os.makedirs()'")
@@ -222,6 +222,7 @@ def load_images_X_y(img_list, output_class_list, img_height = 256, img_width = 2
     print("Total size of y_test: ", len(y_test))
     
     return X_test, y_test
+   
 
 
     
