@@ -63,23 +63,34 @@ def rename_files(in_path, newname):
                 os.rename(filename, new_file)
                 
                 
-def move_files(in_path, out_path, n_samples=20):
+def move_files(in_path, out_path, n_samples=20,shuffle=True):
     '''
     Splits the data into train, test, validation set. 
     For each set this function needs to be executed separately.
     '''
+    out_path = out_path+"/"
+    print(out_path)
     # List all files in the directory
     file_list = os.listdir(in_path)
     #current_dir = os.getcwd()     
     working_directory(in_path)
-    shuf = np.random.permutation(file_list)
-    print("Moving to %r.Please wait..  " % out_path)
-    start = time.time()
-    for i in range(n_samples):
-            move(shuf[i], out_path + shuf[i])
-    end = time.time()
-    print("Op took %r secs." %(end - start))
-    print("All {} files moved.".format(n_samples))
+    if shuffle:
+        shuf = np.random.permutation(file_list)
+        print("Moving to %r.Please wait..  " % out_path)
+        start = time.time()
+        for i in range(n_samples):
+                move(shuf[i], out_path + shuf[i])
+        end = time.time()
+        print("Op took %r secs." %(end - start))
+        print("All {} files moved.".format(n_samples))
+    else:
+        print("Moving to %r.Please wait..  " % out_path)
+        start = time.time()
+        for i in range(n_samples):
+                move(file_list[i], out_path + file_list[i])
+        end = time.time()
+        print("Op took %r secs." %(end - start))
+        print("All {} files moved.".format(n_samples))
         
 
 def copy_files(in_path, out_path, n_samples = None, shuffle = False):
@@ -116,18 +127,6 @@ def copy_files(in_path, out_path, n_samples = None, shuffle = False):
 
         print("Op took %r secs." %(end - start))
         print("All {} files moved.".format(n_samples))
-
-
-def onehot_encoding(x, num_classes = None, dir = False):
-        '''
-        Gives a value for each classes or target variables.
-        If data is extracted from directory instead of csv, pickle, excel etc then set dir to True.
-        Note:- Uses Keras abstraction. 
-        '''
-        if dir:
-            return to_categorical(x)
-        else:
-            return to_categorical(x, num_classes)
     
         
 def normalize_by_pixels_range(data):
@@ -223,6 +222,27 @@ def load_images_X_y(img_list, output_class_list, img_height = 256, img_width = 2
     
     return X_test, y_test
    
+
+def data_tree(path):
+    l1folders = os.listdir(path)
+    path_list = []
+    for i in l1folders:
+        abs_path = os.path.join(path,i+"/")
+        print(abs_path)
+        cls_names=os.listdir(abs_path)
+    #     print(cls_names)
+        for j in cls_names:
+            rel_path = os.path.join(abs_path,j+"/")
+    #         print(rel_path)
+            filelist = os.listdir(rel_path)
+            total_count = len(filelist)
+            print("   ",j , total_count)
+        print("\n")
+
+def check_subfolders(path,topdown=False):
+    for root, dirs, files in os.walk(path, topdown=topdown):
+        for name in dirs:
+            print (os.path.join(root, name))
 
 
     
